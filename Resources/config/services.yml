@@ -1,0 +1,4 @@
+services:
+#    j_workman_scaffold.example:
+#        class: JWorkman\ScaffoldBundle\Example
+#        arguments: [@service_id, "plain_value", %parameter%]
