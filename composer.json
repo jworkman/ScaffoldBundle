@@ -18,7 +18,7 @@
     "require-dev": {
     },
     "autoload": {
-        "psr-4": { "JWorkman\\ScaffoldBundle\\": "vendor/jworkman/scaffold-bundle/" }
+        "psr-4": { "JWorkman\\ScaffoldBundle\\": "" }
     },
     "extra": {
         "branch-alias": {
