@@ -153,6 +153,27 @@ class ScaffoldController extends Controller
     protected $routes   = [];
 
 
+    /*
+        templates can override the default views for a scaffold. If you have your
+        own view templates you would like to use then use this property to point
+        the scaffold towards your custom templates. It must be pointed at the
+        directory that contains the following directory structure:
+        Ex)
+            protected $templates = "AcmeBundle:Events";
+
+            would point to the following directory structure:
+
+            AcmeBundle
+            - Resources
+            -- views
+            --- Events
+            ---- index.html.twig
+            ---- edit.html.twig
+            ---- new.html.twig
+    */
+    protected $templates   = "JWorkmanScaffoldBundle:Default";
+
+
 
     private function beforeFilter()
     {
@@ -319,15 +340,15 @@ class ScaffoldController extends Controller
         // Format the data columns
         $masked_data = $this->maskColumns($results);
 
-        return $this->getJSONResponse( $masked_data );
+        
         // If this was an API request then render JSON
-        if ( $this->apiRequested && $this->apiEnabled ) {
-            $this->getJSONResponse( $masked_data );
+        if ( ($this->apiRequested || isset($_GET['json'])) && $this->apiEnabled ) {
+            return $this->getJSONResponse( $masked_data );
         }
 
         // Finally render the view
         return $this->render(
-            $this->entityName . ':index.html.twig',
+            $this->templates . ':index.html.twig',
             $this->getTwigParams([ $this->viewParameter => $masked_data, 'pagination' => $pagination ], 'index')
         );
 
@@ -376,7 +397,7 @@ class ScaffoldController extends Controller
 
         // Render an edit form view
         return $this->render(
-            $this->entityName . ':edit.html.twig',
+            $this->templates . ':edit.html.twig',
             $this->getTwigParams([ 'form' => $form->createView() ])
         );
 
@@ -455,7 +476,7 @@ class ScaffoldController extends Controller
 
         // Render the form view
         return $this->render(
-            $this->entityName . ':new.html.twig',
+            $this->templates . ':new.html.twig',
             $this->getTwigParams([ 'form' => $form->createView() ], 'new')
         );
 
