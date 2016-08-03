@@ -254,6 +254,28 @@ class ScaffoldController extends Controller
     }
 
 
+    private function getJSONResponse( $masked_data = [] )
+    {
+
+        $records = [];
+
+        foreach($masked_data as $row) {
+
+            $record = [];
+
+            foreach($row as $column_name => $meta_data) {
+                $record[$column_name] = $meta_data['value'];
+            }
+
+            array_push($records, $record);
+
+        }
+
+        return new JsonResponse($records);
+
+    }
+
+
 
     /*
         The index action should show a list of all records located at /{entity}
@@ -294,10 +316,19 @@ class ScaffoldController extends Controller
         // Build a pagination object to pass to the view
         $pagination = $this->buildPagination($page, $this->limit, $count, $results);
 
+        // Format the data columns
+        $masked_data = $this->maskColumns($results);
+
+        return $this->getJSONResponse( $masked_data );
+        // If this was an API request then render JSON
+        if ( $this->apiRequested && $this->apiEnabled ) {
+            $this->getJSONResponse( $masked_data );
+        }
+
         // Finally render the view
         return $this->render(
             $this->entityName . ':index.html.twig',
-            $this->getTwigParams([ $this->viewParameter => $this->maskColumns($results), 'pagination' => $pagination ], 'index')
+            $this->getTwigParams([ $this->viewParameter => $masked_data, 'pagination' => $pagination ], 'index')
         );
 
     }
