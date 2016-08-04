@@ -1,0 +1,114 @@
+<?php
+
+namespace {{ target.namespace }}\Controller;
+
+use JWorkman\ScaffoldBundle\Controller\ScaffoldController;
+
+class {{ class }} extends ScaffoldController
+{
+
+    /*
+        entityName is the fully qualified entity name including the bundle
+        namespace separated by a colon. An entity name must be specified
+        in order to place a scaffold in context.
+        Ex) To make the scaffold manage the "Event" entity
+
+            protected $entityName = "AcmeBundle:Event";
+
+    */
+    protected $entityName       = "{{ entity.fq_entity_name }}";
+
+    /*
+        viewParameter is a property that you can specify twig to use for any
+        entity results that are passed to the view.
+        Ex) To use the twig name "events" in twig
+
+            protected $viewParameter = "events";
+
+    */
+    protected $viewParameter    = "results";
+
+    /*
+        friendlyName is a property that you can specify the official title
+        of this scaffold. This should be user friendly and formated to fit
+        most method contexts.
+        Ex) To make the scaffold refer to your "UserProfile" entity as "User Profiles"
+
+            protected $friendlyName = "User Profile";
+
+    */
+    protected $friendlyName     = "{{ title }}";
+
+    /*
+        lockedMethods allows you to specify a list of forbidden methods on a
+        scaffold. This defaults to all methods allowed.
+        Ex) If you want to disabled the ability to delete an entity
+
+            protected $lockedMethods = ['delete'];
+
+    */
+    protected $lockedMethods    = [{% for method in routing.locked_methods %}"{{ method }}"{% if not loop.last %}, {% endif %}{% endfor %}];
+
+    /*
+        columnMask allows you to specify a list of entity columns to pass to the
+        view. If you are dealing with passwords this should be setup to hide the
+        password.
+        Ex) To disable the "password" column of an entity
+
+            protected $columnMask = [ 'password' => false ];
+
+    */
+    protected $columnMask       = [{% for column in column_mask %}"{{ column }}"{% if not loop.last %}, {% endif %}{% endfor %}];
+
+    /*
+        limit controls the maximum amount of results that can be loaded on one
+        request. This is used in conjunction with pagination.
+    */
+    protected $limit            = 40;
+
+    /*
+        apiEnabled specifies if this entity should use JSON API support. To turn
+        the API on just set this to true. The API will show all the columns that
+        are specified by the columnMask property. This defaults to disabled.
+        Ex) To enable the API of an entity
+
+            protected $apiEnabled = true;
+
+    */
+    protected $apiEnabled       = {% if api %}true{% else %}false{% endif %};
+
+    /*
+        routes specify the different route names for each action as they
+        relate to your routing.yml file. This is important so all of the
+        scaffold links are correct. It is formated by 'method' => 'route_name'
+        Ex)
+            protected $routes   = [ 'index' => 'event_index_route_name' ]
+    */
+    protected $routes           = [
+        'index' => '{{ routing.prefix }}_index',
+        'new'   => '{{ routing.prefix }}_new',
+        'edit'  => '{{ routing.prefix }}_edit',
+        'create' => '{{ routing.prefix }}_new',
+        'delete' => '{{ routing.prefix }}_delete',
+        'update' => '{{ routing.prefix }}_edit'
+    ];
+
+    /*
+        This method should return a symfony form for the $entity param. An
+        example is:
+
+        return $this->createFormBuilder( $entity )
+            ->add('title', 'text')
+    */
+    public function getForm( $entity )
+    {
+    {% if form.fields is not empty %}
+    return $this->createFormBuilder( $entity )
+        {% for field in form.fields %}
+        ->add("{{ field.name }}", "{{ field.type }}")
+        {% endfor %}
+;
+    {% endif %}
+}
+
+}

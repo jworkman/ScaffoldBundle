@@ -1,1 +1,76 @@
-Hello {{ name }}!
+{% extends '::scaffold.html.twig' %}
+
+{% block body %}
+<div class="col-xs-12 col-md-12">
+    <div class="widget">
+        <div class="widget-header ">
+            <span class="widget-caption">{{ friendlyName }}</span>
+
+            <div class="widget-buttons">
+                <a href="#" data-toggle="maximize">
+                    <i class="fa fa-expand"></i>
+                </a>
+                <a href="#" data-toggle="collapse">
+                    <i class="fa fa-minus"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="widget-body">
+            <table class="table table-datatable table-striped table-bordered table-hover" id="simpledatatable">
+                <thead>
+                    <tr>
+                        {% set firstRow = results|first %}
+                        {% for column in firstRow %}
+                            <th>{{ column.label }}</th>
+                        {% endfor %}
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    {% for row in results %}
+                        {% set pk = "" %}
+                        <tr>
+                            {% for column in row %}
+
+                                {% if column.is_pk %}
+                                    {% set pk = column.value %}
+                                {% endif %}
+
+                                <td>{{ column.value }}</td>
+
+                            {% endfor %}
+                            <td>
+                                <a href="{{ path(routes.edit, {'pk':pk}) }}" class="btn btn-palegreen btn-xs">Edit</a>
+                                <a href="{{ path(routes.delete, {'pk':pk}) }}" class="btn btn-danger btn-xs">Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+
+            <div class="row DTTTFooter">
+                <div class="col-sm-6">
+                    <div class="dataTables_info" id="simpledatatable_info" role="alert" aria-live="polite" aria-relevant="all">Showing {{ pagination.listings.from }} to {{ pagination.listings.to }} of {{ pagination.listings.total }} entries</div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="dataTables_paginate paging_bootstrap" id="simpledatatable_paginate">
+                        <ul class="pagination">
+                            <li class="prev{% if not pagination.has_previous %} disabled{% endif %}"><a href="#">Prev</a></li>
+                            {% for page in pagination.page_range %}
+                                <li class="{% if pagination.page == page %}active{% endif %}"><a href="{{ path( routes.index, {'page':page} ) }}">{{ page }}</a></li>
+                            {% endfor %}
+                            <li class="next"><a href="#">Next</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <a href="{{ path( routes.new ) }}" class="btn btn-success space-vertical">Create New {{ friendlyName }}</a>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
