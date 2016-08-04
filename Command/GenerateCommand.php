@@ -55,6 +55,9 @@ class GenerateCommand extends GenerateDoctrineCommand
         // Load the column mask
         $this->view['column_mask']                  = $this->getColumnMask( $input, $output );
 
+        // Load the column mask
+        $this->view['form']                         = $this->getForm( $input, $output );
+
         // Load the API config
         $this->view['api']                          = $this->getAPI( $input, $output );
 
@@ -73,6 +76,49 @@ class GenerateCommand extends GenerateDoctrineCommand
         }
 
         
+
+    }
+
+    private function fieldTypeToFormType( $type )
+    {
+        if ( $type == "string" ) { return "text"; }
+        if ( $type == "boolean" ) { return "checkbox"; }
+        return $type;
+    }
+
+    protected function getForm(InputInterface $input, OutputInterface $output)
+    {
+
+        $fields = [];
+
+        // First we need to get the columns of this entity
+        $metadata   = $this->em->getClassMetadata( $this->view['entity']['fq_entity_name'] );
+
+        foreach($metadata->fieldMappings as $fieldName => $field) {
+            // If this field is a primary key then ignore
+            if ( isset($field['id']) && $field['id'] ) { continue; }
+
+            // Map the field type to its form field type
+            $type = $this->fieldTypeToFormType( $field['type'] );
+
+            $question = new Question($this->questionHelper->getQuestion('<question>What type of form field for "' . $field['fieldName'] . '"?</question>', $type), $type);
+            $question->setAutocompleterValues( ['text', 'textarea', 'email', 'integer', 'money', 'number', 'password', 
+                'percent', 'search', 'url', 'range', 'choice', 'entity', 'country', 'language', 'locale', 'timezone', 
+                'currency', 'date', 'datetime', 'time', 'birthday', 'checkbox', 'file', 'radio', 'collection', 'repeated', 
+                'hidden', 'button', 'reset', 'submit'] );
+
+
+            // Ask for the entity
+            $type = $this->questionHelper->ask($input, $output, $question);
+
+            array_push($fields, ['name' => $field['fieldName'], 'type' => $type]);
+
+        }
+
+        // add a submit button to the fields list 
+        array_push($fields, ['name' => 'save', 'type' => 'submit']);
+
+        return [ 'fields' => $fields ];
 
     }
 
