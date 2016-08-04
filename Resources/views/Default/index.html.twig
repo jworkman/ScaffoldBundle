@@ -40,7 +40,7 @@
 
                                 <td>
                                     {% if column.value == "Yes" or column.value == "No" %}
-                                        <span class="label label-{% column.value == "Yes" %}success{% else %}danger{% endif %}"></span>
+                                        <span class="label label-{% if column.value == "Yes" %}success{% else %}danger{% endif %}"></span>
                                     {% else %}
                                         {{ column.value|raw }}
                                     {% endif %}
