@@ -1,24 +1,10 @@
-{% extends 'SONCmsBundle::base.html.twig' %}
-
-{% block stylesheets %}
-    {{ parent() }}
-
-    {% stylesheets
-        'bundles/soncms/css/dataTables.bootstrap.css'
-        filter='cssrewrite' %}
-        <link rel="stylesheet" href="{{ asset_url }}" />
-    {% endstylesheets %}
-{% endblock %}
-
-{% set breadcrumbs = {
-    'son_cms_homepage': 'Home',
-} %}
+{% extends '::scaffold.html.twig' %}
 
 {% block body %}
 <div class="col-xs-12 col-md-12">
     <div class="widget">
         <div class="widget-header ">
-            <span class="widget-caption">Scheduled Events</span>
+            <span class="widget-caption">{{ friendlyName }}</span>
 
             <div class="widget-buttons">
                 <a href="#" data-toggle="maximize">
@@ -87,8 +73,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block page_scripts %}
-    {{ parent() }}
 {% endblock %}

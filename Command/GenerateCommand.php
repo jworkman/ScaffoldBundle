@@ -170,14 +170,14 @@ class GenerateCommand extends GenerateDoctrineCommand
         $new_routes[ $this->view['routing']['prefix'] . '_create' ] = [
             'path' => '/' . $this->view['routing']['prefix'] . '/new',
             'defaults' => [
-                '_controller' => $this->view['target']['bundle_name'] . ':' . $this->rightTrim($this->view['class'], 'Controller', true) . ':create'
+                '_controller' => $this->view['target']['bundle_name'] . ':' . $this->rightTrim($this->view['class'], 'Controller', true) . ':new'
             ],
             'methods' => ['POST']
         ];
 
         // Edit route
         $new_routes[ $this->view['routing']['prefix'] . '_edit' ] = [
-            'path' => '/' . $this->view['routing']['prefix'] . '/{pk}/edit',
+            'path' => '/' . $this->view['routing']['prefix'] . '/{pk}',
             'defaults' => [
                 '_controller' => $this->view['target']['bundle_name'] . ':' . $this->rightTrim($this->view['class'], 'Controller', true) . ':edit'
             ],
@@ -186,9 +186,9 @@ class GenerateCommand extends GenerateDoctrineCommand
 
         // Update route
         $new_routes[ $this->view['routing']['prefix'] . '_update' ] = [
-            'path' => '/' . $this->view['routing']['prefix'] . '/{pk}/edit',
+            'path' => '/' . $this->view['routing']['prefix'] . '/{pk}',
             'defaults' => [
-                '_controller' => $this->view['target']['bundle_name'] . ':' . $this->rightTrim($this->view['class'], 'Controller', true) . ':update'
+                '_controller' => $this->view['target']['bundle_name'] . ':' . $this->rightTrim($this->view['class'], 'Controller', true) . ':edit'
             ],
             'methods' => ['POST']
         ];

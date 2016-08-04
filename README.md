@@ -213,6 +213,12 @@ The below example shows how to override the CRUD templates, and use another bund
 
 The above example will use the views inside of `@AcmeBundle/Resources/views/UserProfile`. 
 
+## Layout Template
 
+In order for scaffolds to work you must define a base layout file for it to use. The default base layout file should be placed in `app/Resources/views/scaffold.html.twig`. You can define your own layout in that file or have one generated for you using the following command:
+
+    app/console scaffold:layout
+
+The generator will create a new layout file for scaffolds. Now you must add whatever styles you need to it. 
 
 
