@@ -396,7 +396,7 @@ class ScaffoldController extends Controller
         // Render an edit form view
         return $this->render(
             $this->templates . ':edit.html.twig',
-            $this->getTwigParams([ 'form' => $form->createView() ])
+            $this->getTwigParams([ 'form' => $form->createView(), 'pk' => $pk ])
         );
 
     }
