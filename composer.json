@@ -8,12 +8,13 @@
     "authors": [
         {
             "name": "Justin Workman",
-            "email": "jworkmandevelopment@gmail.com"
+            "email": "jworkmandevelopment@gmail.com",
+            "role": "Developer"
         }
     ],
     "require": {
         "php": ">=5.4.0",
-        "symfony/symfony": ">=2.7.*"
+        "symfony/symfony": ">=2.4"
     },
     "require-dev": {
     },
