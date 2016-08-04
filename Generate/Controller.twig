@@ -102,6 +102,13 @@ class {{ class }} extends ScaffoldController
     */
     public function getForm( $entity )
     {
-    }
+    {% if form.fields is not empty %}
+    return $this->createFormBuilder( $entity )
+        {% for field in form.fields %}
+        ->add("{{ field.name }}", "{{ field.type }}")
+        {% endfor %}
+;
+    {% endif %}
+}
 
 }
