@@ -11,8 +11,6 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Form\FormRendererInterface;
 
-use SON\CmsBundle\Entity\Content;
-
 class ScaffoldController extends Controller
 {
 
@@ -52,7 +50,7 @@ class ScaffoldController extends Controller
         in order to place a scaffold in context.
         Ex) To make the scaffold manage the "Event" entity
 
-            protected $entityName = "SONCmsBundle:Event";
+            protected $entityName = "Acme:Event";
 
     */
     protected $entityName       = "";
@@ -99,7 +97,7 @@ class ScaffoldController extends Controller
         this entity. It must include a full namespace with escaped backslashes.
         Ex)
 
-            protected $form = "\\SON\\CmsBundle\\Form\\ScheduleEventType";
+            protected $form = "\\AcmeBundle\\Form\\UserProfileType";
 
     */
     protected $form             = "";
@@ -398,7 +396,7 @@ class ScaffoldController extends Controller
         // Render an edit form view
         return $this->render(
             $this->templates . ':edit.html.twig',
-            $this->getTwigParams([ 'form' => $form->createView() ])
+            $this->getTwigParams([ 'form' => $form->createView(), 'pk' => $pk ])
         );
 
     }
