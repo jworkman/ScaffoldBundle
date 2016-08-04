@@ -13,7 +13,7 @@ class {{ class }} extends ScaffoldController
         in order to place a scaffold in context.
         Ex) To make the scaffold manage the "Event" entity
 
-            protected $entityName = "SONCmsBundle:Event";
+            protected $entityName = "AcmeBundle:Event";
 
     */
     protected $entityName       = "{{ entity.fq_entity_name }}";
@@ -34,10 +34,10 @@ class {{ class }} extends ScaffoldController
         most method contexts.
         Ex) To make the scaffold refer to your "UserProfile" entity as "User Profiles"
 
-            protected $friendlyName = "User Profiles";
+            protected $friendlyName = "User Profile";
 
     */
-    protected $friendlyName     = "{{ entity.title }}";
+    protected $friendlyName     = "{{ title }}";
 
     /*
         lockedMethods allows you to specify a list of forbidden methods on a

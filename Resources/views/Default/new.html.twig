@@ -1,14 +1,10 @@
-{% extends 'SONCmsBundle::base.html.twig' %}
-
-{% block stylesheets %}
-    {{ parent() }}
-{% endblock %}
+{% extends '::scaffold.html.twig' %}
 
 {% block body %}
 <div class="col-xs-12 col-md-12">
     <div class="widget">
         <div class="widget-header ">
-            <span class="widget-caption">Create Scheduled Event</span>
+            <span class="widget-caption">Create {{ friendlyName }}</span>
 
             <div class="widget-buttons">
                 <a href="#" data-toggle="maximize">
@@ -23,26 +19,11 @@
         <div class="widget-body">
 
 
-            {{ form_start(form, { action: '?', attr: {'class':'scaffold-form'} }) }}
+            {{ form_start(form, { action: path(routes.new), attr: {'class':'scaffold-form'} }) }}
             {{ form_end(form) }}
 
 
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block page_scripts %}
-    {{ parent() }}
-    {% javascripts
-        '@SONCmsBundle/Resources/public/js/datetime/bootstrap-datepicker.js'
-        '@SONCmsBundle/Resources/public/js/datetime/bootstrap-timepicker.js'
-        %}<script src="{{ asset_url }}"></script>
-    {% endjavascripts %}
-    <script type="text/javascript">
-    //--Bootstrap Date Picker--
-    $(document).ready(function(){
-        $('.date-picker').datepicker();
-    });
-    </script>
 {% endblock %}
