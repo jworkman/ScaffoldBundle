@@ -2,7 +2,7 @@
     "name": "jworkman/scaffold-bundle",
     "type": "symfony-bundle",
     "description": "Symfony Scaffold Bundle",
-    "keywords": ["CRUD Scaffold Symfony2"],
+    "keywords": ["Symfony2", "Scaffold", "CRUD", "REST"],
     "homepage": "https://github.com/jworkman/ScaffoldBundle",
     "license": "MIT",
     "authors": [
