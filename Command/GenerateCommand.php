@@ -11,6 +11,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 use Sensio\Bundle\GeneratorBundle\Command\GenerateDoctrineCommand;
 use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Yaml\Yaml;
 
 class GenerateCommand extends GenerateDoctrineCommand
 {
@@ -54,14 +55,166 @@ class GenerateCommand extends GenerateDoctrineCommand
         // Load the column mask
         $this->view['column_mask']                  = $this->getColumnMask( $input, $output );
 
+        // Load the column mask
+        $this->view['form']                         = $this->getForm( $input, $output );
+
         // Load the API config
         $this->view['api']                          = $this->getAPI( $input, $output );
 
         // Load the target bundle
         $this->view['target']                       = $this->getTargetBundle( $input, $output );
 
-        $this->generateScaffold( $input, $output );
+        $question       = new ConfirmationQuestion('<question>Would you like to automatically update your routes as well?</question>', $input->getOption('api'));
+        $updateRoutes   = $this->questionHelper->ask($input, $output, $question);
 
+        if ( $updateRoutes ) {
+            $this->updateRoutes( $input, $output );
+        }
+
+        if ( $this->generateScaffold( $input, $output ) ) {
+            $output->writeln('<info>Scaffold was generated successfully!</info>');
+        }
+
+        
+
+    }
+
+    private function fieldTypeToFormType( $type )
+    {
+        if ( $type == "string" ) { return "text"; }
+        if ( $type == "boolean" ) { return "checkbox"; }
+        return $type;
+    }
+
+    protected function getForm(InputInterface $input, OutputInterface $output)
+    {
+
+        $fields = [];
+
+        // First we need to get the columns of this entity
+        $metadata   = $this->em->getClassMetadata( $this->view['entity']['fq_entity_name'] );
+
+        foreach($metadata->fieldMappings as $fieldName => $field) {
+            // If this field is a primary key then ignore
+            if ( isset($field['id']) && $field['id'] ) { continue; }
+
+            // Map the field type to its form field type
+            $type = $this->fieldTypeToFormType( $field['type'] );
+
+            $question = new Question($this->questionHelper->getQuestion('<question>What type of form field for "' . $field['fieldName'] . '"?</question>', $type), $type);
+            $question->setAutocompleterValues( ['text', 'textarea', 'email', 'integer', 'money', 'number', 'password', 
+                'percent', 'search', 'url', 'range', 'choice', 'entity', 'country', 'language', 'locale', 'timezone', 
+                'currency', 'date', 'datetime', 'time', 'birthday', 'checkbox', 'file', 'radio', 'collection', 'repeated', 
+                'hidden', 'button', 'reset', 'submit'] );
+
+
+            // Ask for the entity
+            $type = $this->questionHelper->ask($input, $output, $question);
+
+            array_push($fields, ['name' => $field['fieldName'], 'type' => $type]);
+
+        }
+
+        // add a submit button to the fields list 
+        array_push($fields, ['name' => 'save', 'type' => 'submit']);
+
+        return [ 'fields' => $fields ];
+
+    }
+
+    protected function updateRoutes(InputInterface $input, OutputInterface $output)
+    {
+
+        $kernel         = $this->getContainer()->get('kernel');
+        $target_path    = $kernel->locateResource('@' . $this->view['target']['bundle_name']);
+        $target_path    = rtrim($target_path, '/');
+
+        $this->getContainer()->get('filesystem')->mkdir($target_path.'/Resources/config/');
+        $routes_path    = $target_path . '/Resources/config/routing.yml';
+        
+        $yaml           = file_get_contents($routes_path);
+        // First we must check for existing routes
+        $routes         = Yaml::parse($yaml);
+
+        foreach( ['index','new','edit','update','create','delete'] as $method )
+        {
+            $route_name = $this->view['routing']['prefix'] . '_' . $method;
+            if ( isset($routes[$route_name]) ) { 
+                $output->writeln('<error>Routing conflict! Route "' . $route_name . '" was already defined in ' . $routes_path .  '. Aborting!</error>'); 
+                return false; 
+            }
+        }
+
+        // Now that we checked our routes we can add them 
+        $new_routes     = [];
+
+        // Index route
+        $new_routes[ $this->view['routing']['prefix'] . '_index' ] = [
+            'path' => '/' . $this->view['routing']['prefix'],
+            'defaults' => [
+                '_controller' => $this->view['target']['bundle_name'] . ':' . $this->rightTrim($this->view['class'], 'Controller', true) . ':index'
+            ],
+            'methods' => ['GET']
+        ];
+
+        // New route
+        $new_routes[ $this->view['routing']['prefix'] . '_new' ] = [
+            'path' => '/' . $this->view['routing']['prefix'] . '/new',
+            'defaults' => [
+                '_controller' => $this->view['target']['bundle_name'] . ':' . $this->rightTrim($this->view['class'], 'Controller', true) . ':new'
+            ],
+            'methods' => ['GET']
+        ];
+
+        // Create route
+        $new_routes[ $this->view['routing']['prefix'] . '_create' ] = [
+            'path' => '/' . $this->view['routing']['prefix'] . '/new',
+            'defaults' => [
+                '_controller' => $this->view['target']['bundle_name'] . ':' . $this->rightTrim($this->view['class'], 'Controller', true) . ':new'
+            ],
+            'methods' => ['POST']
+        ];
+
+        // Edit route
+        $new_routes[ $this->view['routing']['prefix'] . '_edit' ] = [
+            'path' => '/' . $this->view['routing']['prefix'] . '/{pk}',
+            'defaults' => [
+                '_controller' => $this->view['target']['bundle_name'] . ':' . $this->rightTrim($this->view['class'], 'Controller', true) . ':edit'
+            ],
+            'methods' => ['GET']
+        ];
+
+        // Update route
+        $new_routes[ $this->view['routing']['prefix'] . '_update' ] = [
+            'path' => '/' . $this->view['routing']['prefix'] . '/{pk}',
+            'defaults' => [
+                '_controller' => $this->view['target']['bundle_name'] . ':' . $this->rightTrim($this->view['class'], 'Controller', true) . ':edit'
+            ],
+            'methods' => ['POST']
+        ];
+
+        // Delete route
+        $new_routes[ $this->view['routing']['prefix'] . '_delete' ] = [
+            'path' => '/' . $this->view['routing']['prefix'] . '/{pk}/delete',
+            'defaults' => [
+                '_controller' => $this->view['target']['bundle_name'] . ':' . $this->rightTrim($this->view['class'], 'Controller', true) . ':delete'
+            ],
+            'methods' => ['GET']
+        ];
+
+        $yaml .= PHP_EOL . Yaml::dump($new_routes);
+
+        return file_put_contents($routes_path, $yaml);
+
+    }
+
+    private function rightTrim($str, $needle, $caseSensitive = true)
+    {
+        $strPosFunction = $caseSensitive ? "strpos" : "stripos";
+        if ($strPosFunction($str, $needle, strlen($str) - strlen($needle)) !== false) {
+            $str = substr($str, 0, -strlen($needle));
+        }
+        return $str;
     }
 
     protected function getAPI(InputInterface $input, OutputInterface $output)
@@ -101,7 +254,7 @@ class GenerateCommand extends GenerateDoctrineCommand
 
     protected function generateScaffold(InputInterface $input, OutputInterface $output)
     {
-        $this->view['class'] = ucfirst( $this->view['entity']['entity_name'] ) . 'Controller';
+        
         $kernel = $this->getContainer()->get('kernel');
         $target_path = $kernel->locateResource('@' . $this->view['target']['bundle_name']);
         $target_path = rtrim($target_path, '/') . '/Controller/' . $this->view['class'] . '.php';
@@ -150,6 +303,7 @@ class GenerateCommand extends GenerateDoctrineCommand
         $view['entity_name']      = $entity_name;
         $view['bundle_name']      = $bundle_name;
         $view['fq_entity_name']   = $entity;
+        $this->view['class'] = ucfirst( $view['entity_name'] ) . 'Controller';
 
         return $view;
     }

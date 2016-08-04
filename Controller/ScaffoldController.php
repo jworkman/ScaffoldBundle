@@ -11,8 +11,6 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Form\FormRendererInterface;
 
-use SON\CmsBundle\Entity\Content;
-
 class ScaffoldController extends Controller
 {
 
@@ -52,7 +50,7 @@ class ScaffoldController extends Controller
         in order to place a scaffold in context.
         Ex) To make the scaffold manage the "Event" entity
 
-            protected $entityName = "SONCmsBundle:Event";
+            protected $entityName = "Acme:Event";
 
     */
     protected $entityName       = "";
@@ -99,7 +97,7 @@ class ScaffoldController extends Controller
         this entity. It must include a full namespace with escaped backslashes.
         Ex)
 
-            protected $form = "\\SON\\CmsBundle\\Form\\ScheduleEventType";
+            protected $form = "\\AcmeBundle\\Form\\UserProfileType";
 
     */
     protected $form             = "";
@@ -151,6 +149,27 @@ class ScaffoldController extends Controller
             protected $routes   = [ 'index' => 'event_index_route_name' ]
     */
     protected $routes   = [];
+
+
+    /*
+        templates can override the default views for a scaffold. If you have your
+        own view templates you would like to use then use this property to point
+        the scaffold towards your custom templates. It must be pointed at the
+        directory that contains the following directory structure:
+        Ex)
+            protected $templates = "AcmeBundle:Events";
+
+            would point to the following directory structure:
+
+            AcmeBundle
+            - Resources
+            -- views
+            --- Events
+            ---- index.html.twig
+            ---- edit.html.twig
+            ---- new.html.twig
+    */
+    protected $templates   = "JWorkmanScaffoldBundle:Default";
 
 
 
@@ -254,6 +273,28 @@ class ScaffoldController extends Controller
     }
 
 
+    private function getJSONResponse( $masked_data = [] )
+    {
+
+        $records = [];
+
+        foreach($masked_data as $row) {
+
+            $record = [];
+
+            foreach($row as $column_name => $meta_data) {
+                $record[$column_name] = $meta_data['value'];
+            }
+
+            array_push($records, $record);
+
+        }
+
+        return new JsonResponse($records);
+
+    }
+
+
 
     /*
         The index action should show a list of all records located at /{entity}
@@ -294,10 +335,19 @@ class ScaffoldController extends Controller
         // Build a pagination object to pass to the view
         $pagination = $this->buildPagination($page, $this->limit, $count, $results);
 
+        // Format the data columns
+        $masked_data = $this->maskColumns($results);
+
+        
+        // If this was an API request then render JSON
+        if ( ($this->apiRequested || isset($_GET['json'])) && $this->apiEnabled ) {
+            return $this->getJSONResponse( $masked_data );
+        }
+
         // Finally render the view
         return $this->render(
-            $this->entityName . ':index.html.twig',
-            $this->getTwigParams([ $this->viewParameter => $this->maskColumns($results), 'pagination' => $pagination ], 'index')
+            $this->templates . ':index.html.twig',
+            $this->getTwigParams([ $this->viewParameter => $masked_data, 'pagination' => $pagination ], 'index')
         );
 
     }
@@ -345,8 +395,8 @@ class ScaffoldController extends Controller
 
         // Render an edit form view
         return $this->render(
-            $this->entityName . ':edit.html.twig',
-            $this->getTwigParams([ 'form' => $form->createView() ])
+            $this->templates . ':edit.html.twig',
+            $this->getTwigParams([ 'form' => $form->createView(), 'pk' => $pk ])
         );
 
     }
@@ -424,7 +474,7 @@ class ScaffoldController extends Controller
 
         // Render the form view
         return $this->render(
-            $this->entityName . ':new.html.twig',
+            $this->templates . ':new.html.twig',
             $this->getTwigParams([ 'form' => $form->createView() ], 'new')
         );
 
