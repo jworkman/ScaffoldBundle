@@ -343,7 +343,7 @@ class ScaffoldController extends Controller
         // Grab the entity manager, repo, and our results from the database
         // Initialize all class globals we will need
         $this->beforeHook();
-        $results    = $this->repo->findBy(
+        $this->results    = $this->repo->findBy(
             $this->indexFilters,
             $this->indexOrder,
             $this->limit,
@@ -362,10 +362,10 @@ class ScaffoldController extends Controller
 
 
         // Build a pagination object to pass to the view
-        $pagination = $this->buildPagination($page, $this->limit, $count, $results);
+        $pagination = $this->buildPagination($page, $this->limit, $count, $this->results);
 
         // Format the data columns
-        $masked_data = $this->maskColumns($results);
+        $masked_data = $this->maskColumns($this->results);
 
         // Call the after hook
         $this->afterHook();
@@ -396,17 +396,17 @@ class ScaffoldController extends Controller
         // Grab the entity manager, repo, and our results from the database
         // Initialize all class globals we will need
         $this->beforeHook();
-        $entity    = $this->repo->findOneBy(
+        $this->entity    = $this->repo->findOneBy(
             $this->editFilters
         );
 
         // If the entity was not found then throw a new 404
-        if ( !$entity ) {
+        if ( !$this->entity ) {
             throw $this->createNotFoundException($this->friendlyName . ' not found!');
         }
 
         // Initialize the form
-        $form = $this->getForm( $entity )->getForm();
+        $form = $this->getForm( $this->entity )->getForm();
 
         // Bind the request to the form
         $form->handleRequest( $this->request );
@@ -414,7 +414,7 @@ class ScaffoldController extends Controller
         // If the form was submitted and is valid then lets save it to the db
         if ( $form->isSubmitted() && $form->isValid() ) {
 
-            $this->em->persist($entity);
+            $this->em->persist($this->entity);
 
             // Call the before save hook
             $this->beforeSaveHook();
@@ -492,10 +492,10 @@ class ScaffoldController extends Controller
         // Grab the class name of the entity we are creating so we can make an instance
         $metadata = $this->em->getClassMetadata( $this->entityName );
         $entityClassName = $metadata->rootEntityName;
-        $entity = new $entityClassName();
+        $this->entity = new $entityClassName();
 
         // Initialize the form
-        $form = $this->getForm( $entity )->getForm();
+        $form = $this->getForm( $this->entity )->getForm();
 
         // Bind the request to the form
         $form->handleRequest( $this->request );
@@ -503,7 +503,7 @@ class ScaffoldController extends Controller
         // If the form was submitted and is valid then lets save it to the db
         if ( $form->isSubmitted() && $form->isValid() ) {
 
-            $this->em->persist($entity);
+            $this->em->persist($this->entity);
             // Call the before save hook
             $this->beforeSaveHook();
 
@@ -543,15 +543,15 @@ class ScaffoldController extends Controller
         $this->deleteFilter[ $this->primaryKey ] = $pk;
 
         // First we must find the entity we are trying to delete
-        $entity = $this->repo->findOneBy( $this->deleteFilter );
+        $this->entity = $this->repo->findOneBy( $this->deleteFilter );
 
         // If the entity was not found then throw a new 404
-        if ( !$entity ) {
+        if ( !$this->entity ) {
             throw $this->createNotFoundException($this->friendlyName . ' not found!');
         }
 
         // Lets actually remove it from the DB
-        $this->em->remove( $entity );
+        $this->em->remove( $this->entity );
 
         // Call the before save hook
         $this->beforeDeleteHook();
