@@ -83,6 +83,7 @@ class GenerateCommand extends GenerateDoctrineCommand
     {
         if ( $type == "string" ) { return "text"; }
         if ( $type == "boolean" ) { return "checkbox"; }
+        if ( $type == "decimal" ) { return "number"; }
         return $type;
     }
 
