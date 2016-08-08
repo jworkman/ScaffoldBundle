@@ -406,7 +406,7 @@ class ScaffoldController extends Controller
         }
 
         // Initialize the form
-        $this->form = $this->getForm( $this->entity )
+        $this->form = $this->getForm( $this->entity );
         $form = $this->form->getForm();
 
         // Bind the request to the form
@@ -496,7 +496,7 @@ class ScaffoldController extends Controller
         $this->entity = new $entityClassName();
 
         // Initialize the form
-        $this->form = $this->getForm( $this->entity )
+        $this->form = $this->getForm( $this->entity );
         $form = $this->form->getForm();
 
         // Bind the request to the form
