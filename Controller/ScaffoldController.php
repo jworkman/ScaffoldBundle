@@ -225,7 +225,7 @@ class ScaffoldController extends Controller
         if ( method_exists($this, 'beforeDelete') ) { return $this->beforeDelete(); }
     }
 
-    private function beforeDeleteHook()
+    private function afterDeleteHook()
     {
         if ( method_exists($this, 'beforeDelete') ) { return $this->beforeDelete(); }
     }
