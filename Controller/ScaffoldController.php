@@ -173,7 +173,7 @@ class ScaffoldController extends Controller
 
 
 
-    private function beforeFilter()
+    private function beforeHook()
     {
 
         $this->initGlobals();
@@ -199,6 +199,35 @@ class ScaffoldController extends Controller
         // Determine if this was a request for the API
         $this->apiRequested = ($this->request->isXmlHttpRequest()) ? true : false;
 
+        if ( method_exists($this, 'before') ) {
+            return $this->before();
+        }
+
+    }
+
+    private function afterHook()
+    {
+        if ( method_exists($this, 'after') ) { return $this->after(); }
+    }
+
+    private function beforeSaveHook()
+    {
+        if ( method_exists($this, 'beforeSave') ) { return $this->beforeSave(); }
+    }
+
+    private function afterSaveHook()
+    {
+        if ( method_exists($this, 'afterSave') ) { return $this->afterSave(); }
+    }
+
+    private function beforeDeleteHook()
+    {
+        if ( method_exists($this, 'beforeDelete') ) { return $this->beforeDelete(); }
+    }
+
+    private function beforeDeleteHook()
+    {
+        if ( method_exists($this, 'beforeDelete') ) { return $this->beforeDelete(); }
     }
 
     private function camelToUnderscore( $str )
@@ -302,7 +331,7 @@ class ScaffoldController extends Controller
     public function indexAction()
     {
         // Execute the before action filter
-        $this->beforeFilter('index');
+        $this->beforeHook();
 
         // Figure out what page was requested, and format it for our SQL call
         if ( isset($_GET['page']) && $_GET['page'] && is_numeric($_GET['page']) && (int)$_GET['page'] > 0 ) {
@@ -313,7 +342,7 @@ class ScaffoldController extends Controller
 
         // Grab the entity manager, repo, and our results from the database
         // Initialize all class globals we will need
-        $this->beforeFilter();
+        $this->beforeHook();
         $results    = $this->repo->findBy(
             $this->indexFilters,
             $this->indexOrder,
@@ -337,6 +366,9 @@ class ScaffoldController extends Controller
 
         // Format the data columns
         $masked_data = $this->maskColumns($results);
+
+        // Call the after hook
+        $this->afterHook();
 
         
         // If this was an API request then render JSON
@@ -363,7 +395,7 @@ class ScaffoldController extends Controller
 
         // Grab the entity manager, repo, and our results from the database
         // Initialize all class globals we will need
-        $this->beforeFilter();
+        $this->beforeHook();
         $entity    = $this->repo->findOneBy(
             $this->editFilters
         );
@@ -383,7 +415,14 @@ class ScaffoldController extends Controller
         if ( $form->isSubmitted() && $form->isValid() ) {
 
             $this->em->persist($entity);
+
+            // Call the before save hook
+            $this->beforeSaveHook();
+
             $this->em->flush();
+
+            // Call the after hook
+            $this->afterSaveHook();
 
             // Add our flash messages
             $this->session->getFlashBag()->add('success', $this->friendlyName . ' has been updated!');
@@ -392,6 +431,9 @@ class ScaffoldController extends Controller
             return $this->redirectToRoute( $this->routes['index'] );
 
         }
+
+        // Call the after hook
+        $this->afterHook();
 
         // Render an edit form view
         return $this->render(
@@ -445,7 +487,7 @@ class ScaffoldController extends Controller
     {
 
         // Initialize all class globals we will need
-        $this->beforeFilter();
+        $this->beforeHook();
 
         // Grab the class name of the entity we are creating so we can make an instance
         $metadata = $this->em->getClassMetadata( $this->entityName );
@@ -462,15 +504,27 @@ class ScaffoldController extends Controller
         if ( $form->isSubmitted() && $form->isValid() ) {
 
             $this->em->persist($entity);
+            // Call the before save hook
+            $this->beforeSaveHook();
+
             $this->em->flush();
+
+            // Call the after hook
+            $this->afterSaveHook();
 
             // Add our flash messages
             $this->session->getFlashBag()->add('success', 'A new ' . $this->friendlyName . ' has been created!');
+
+            // Call the after hook
+            $this->afterHook();
 
             // Go back to the index page for this entity
             return $this->redirectToRoute( $this->routes['index'] );
 
         }
+
+        // Call the after hook
+        $this->afterHook();
 
         // Render the form view
         return $this->render(
@@ -483,7 +537,7 @@ class ScaffoldController extends Controller
     public function deleteAction( $pk )
     {
 
-        $this->beforeFilter();
+        $this->beforeHook();
 
         // We need to add the primary key filter to our default filters
         $this->deleteFilter[ $this->primaryKey ] = $pk;
@@ -498,10 +552,21 @@ class ScaffoldController extends Controller
 
         // Lets actually remove it from the DB
         $this->em->remove( $entity );
+
+        // Call the before save hook
+        $this->beforeDeleteHook();
+
+        // Make the SQL calls
         $this->em->flush();
+
+        // Call the after hook
+        $this->afterDeleteHook();
 
         // Add our flash messages
         $this->session->getFlashBag()->add('error', $this->friendlyName . ' has been deleted!');
+
+        // Call the after hook
+        $this->afterHook();
 
         // Go back to the index page for this entity
         return $this->redirectToRoute( $this->routes['index'] );
