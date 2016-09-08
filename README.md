@@ -186,7 +186,7 @@ After the generator has completed you will notice it placed a new controller in 
 
 
 
-You notice that we can change the form, and any of it's field types. There are also some other various properties that can be overridden at anytime to further customize the scaffold. There are few properties that you can add here as well. Take for example if we wanted to override the default scaffold twig tempaltes. We can do this by defining a property in our controller called `templates` that points to a bundle view resource directory. 
+You notice that we can change the form, and any of it's field types. There are also some other various properties that can be overridden at anytime to further customize the scaffold. There are few properties that you can add here as well. Take for example if we wanted to override the default scaffold twig templates. We can do this by defining a property in our controller called `templates` that points to a bundle view resource directory. 
 
 The below example shows how to override the CRUD templates, and use another bundle's templates instead. Add the following property in your scaffold controller:
 
