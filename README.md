@@ -43,13 +43,13 @@ The third question will ask you what routing prefix you would like to use for th
 
     Specify a routing prefix to mount this scaffold [user_profile]:
 
-The next question will ask you if you want to lock down any CRUD functionality for this scaffold. Read the documentation above the question for more information. You will have to list out all the methods you want locked down in a comma seperated format. 
+The next question will ask you if you want to lock down any CRUD functionality for this scaffold. Read the documentation above the question for more information. You will have to list out all the methods you want locked down in a comma separated format. 
 
-    What HTTP do you want to disable (comma seperated)? none
+    What HTTP do you want to disable (comma separated)? none
 
     // Or if you want to disable the index, and edit actions
 
-    What HTTP do you want to disable (comma seperated)? index,edit
+    What HTTP do you want to disable (comma separated)? index,edit
 
 The fifth question will ask you if you want to hide any specific fields from the index action. This DOES not hide the fields from the edit, or new actions. This is useful if you have something like passwords that you want to hide from the index action, but not the edit, or new forms. Below we will disable the field "password"
 
