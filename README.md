@@ -61,7 +61,7 @@ Once you are done defining your form field types it will ask you if you would li
 
     Would you like to enable the JSON API for this scaffold? Yes
 
-We need to define a target bundle. This defaults to the bundle that the entity is located in, but can be overridden to a different bundle. This is useful if you have a specifc bundle you want to place all of your scaffolds in instead of seperate bundles. 
+We need to define a target bundle. This defaults to the bundle that the entity is located in, but can be overridden to a different bundle. This is useful if you have a specifc bundle you want to place all of your scaffolds in instead of separate bundles. 
 
     Specify a target bundle for the controller [AcmeBundle]:
 
