@@ -403,7 +403,7 @@ EOT;
 
         $output->writeln($text);
         $question = new ChoiceQuestion(
-            '<question>What HTTP do you want to disable (comma seperated)?</question>',
+            '<question>What HTTP do you want to disable (comma separated)?</question>',
             array( 'none' => 'none', 'index' => 'index', 'edit' => 'edit', 'update' => 'update', 'new' => 'new', 'create' => 'create', 'delete' => 'delete'),
             'none'
         );
