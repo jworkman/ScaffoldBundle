@@ -43,13 +43,13 @@ The third question will ask you what routing prefix you would like to use for th
 
     Specify a routing prefix to mount this scaffold [user_profile]:
 
-The next question will ask you if you want to lock down any CRUD functionality for this scaffold. Read the documentation above the question for more information. You will have to list out all the methods you want locked down in a comma seperated format. 
+The next question will ask you if you want to lock down any CRUD functionality for this scaffold. Read the documentation above the question for more information. You will have to list out all the methods you want locked down in a comma separated format. 
 
-    What HTTP do you want to disable (comma seperated)? none
+    What HTTP do you want to disable (comma separated)? none
 
     // Or if you want to disable the index, and edit actions
 
-    What HTTP do you want to disable (comma seperated)? index,edit
+    What HTTP do you want to disable (comma separated)? index,edit
 
 The fifth question will ask you if you want to hide any specific fields from the index action. This DOES not hide the fields from the edit, or new actions. This is useful if you have something like passwords that you want to hide from the index action, but not the edit, or new forms. Below we will disable the field "password"
 
@@ -61,7 +61,7 @@ Once you are done defining your form field types it will ask you if you would li
 
     Would you like to enable the JSON API for this scaffold? Yes
 
-We need to define a target bundle. This defaults to the bundle that the entity is located in, but can be overridden to a different bundle. This is useful if you have a specifc bundle you want to place all of your scaffolds in instead of seperate bundles. 
+We need to define a target bundle. This defaults to the bundle that the entity is located in, but can be overridden to a different bundle. This is useful if you have a specifc bundle you want to place all of your scaffolds in instead of separate bundles. 
 
     Specify a target bundle for the controller [AcmeBundle]:
 
@@ -186,7 +186,7 @@ After the generator has completed you will notice it placed a new controller in 
 
 
 
-You notice that we can change the form, and any of it's field types. There are also some other various properties that can be overridden at anytime to further customize the scaffold. There are few properties that you can add here as well. Take for example if we wanted to override the default scaffold twig tempaltes. We can do this by defining a property in our controller called `templates` that points to a bundle view resource directory. 
+You notice that we can change the form, and any of it's field types. There are also some other various properties that can be overridden at anytime to further customize the scaffold. There are few properties that you can add here as well. Take for example if we wanted to override the default scaffold twig templates. We can do this by defining a property in our controller called `templates` that points to a bundle view resource directory. 
 
 The below example shows how to override the CRUD templates, and use another bundle's templates instead. Add the following property in your scaffold controller:
 

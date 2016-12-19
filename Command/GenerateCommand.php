@@ -38,6 +38,17 @@ class GenerateCommand extends GenerateDoctrineCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
+        $mcApiKey   = "bab961bf7098155a95123837453a0ddd-us7";
+        $qcrewList  = "46319a25ec";
+
+        try {
+            $mc = new \Mailchimp( $mcApiKey ); 
+            var_dump($mc->lists->getList(['list_id' => $qcrewList]));
+        } catch(\Exception $e) {
+            echo $e->getMessage();
+        }
+        exit;
+
         $this->em                                   = $this->getContainer()->get('doctrine')->getManager();
         $this->questionHelper                       = $this->getQuestionHelper();
 
@@ -403,7 +414,7 @@ EOT;
 
         $output->writeln($text);
         $question = new ChoiceQuestion(
-            '<question>What HTTP do you want to disable (comma seperated)?</question>',
+            '<question>What HTTP do you want to disable (comma separated)?</question>',
             array( 'none' => 'none', 'index' => 'index', 'edit' => 'edit', 'update' => 'update', 'new' => 'new', 'create' => 'create', 'delete' => 'delete'),
             'none'
         );
